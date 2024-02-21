@@ -8,8 +8,6 @@
 
 // @todo: Вывести карточки на страницу
 
-
-
 function createCard(name, link) {
   const cardTemplate = document.querySelector("#card-template");
   const cardElement = cardTemplate.content.firstElementChild.cloneNode(true);
