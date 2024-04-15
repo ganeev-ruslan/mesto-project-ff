@@ -23,6 +23,8 @@ const createCard = ({ userIdIdentifier, sample, data, deleteServerCard, likeServ
   if (owner['_id'] === userIdIdentifier) {
     deleteButton.classList.add('card__delete-button_is-active');
     deleteButton.addEventListener('click', () => deleteServerCard({ cardId: _id, cardElement: element, buttonElement: deleteButton }));
+  } else {
+    deleteButton.style.display = 'none'; // Скрыть кнопку удаления у карточек, не принадлежащих текущему пользователю
   }
 
   if (likes.map(like => like['_id']).includes(userIdIdentifier)) {
@@ -34,4 +36,32 @@ const createCard = ({ userIdIdentifier, sample, data, deleteServerCard, likeServ
   return element;
 };
 
-export { createCard };
+
+
+
+const removeCardFromDOM = (cardElement) => {
+  cardElement.remove();
+};
+
+const setLike = (buttonElement, counterElement, likesCount) => {
+  buttonElement.classList.add('card__like-button_is-active');
+  counterElement.classList.add('card__like-counter_is-active');
+  counterElement.textContent = likesCount;
+};
+
+const removeLike = (buttonElement, counterElement) => {
+  buttonElement.classList.remove('card__like-button_is-active');
+  counterElement.classList.remove('card__like-counter_is-active');
+  counterElement.textContent = '';
+};
+
+
+export { createCard, removeCardFromDOM, setLike, removeLike };
+
+
+
+
+
+
+
+
