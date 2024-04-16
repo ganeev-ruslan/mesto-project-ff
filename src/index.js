@@ -2,8 +2,10 @@ import "./pages/index.css";
 
 import { closeModal, openModal, handleModalClick } from "./scripts/modal.js";
 
-import { createCard } from "./scripts/card.js";
 import {
+  createCard,
+  setLike,
+  removeLike,
   removeCardFromDOM,
 } from "./scripts/card.js";
 
@@ -80,36 +82,18 @@ const handleCardLike = ({ cardId, buttonElement, counterElement }) => {
   if (buttonElement.classList.contains("card__like-button_is-active")) {
     unLikeCard(cardId)
       .then(({ likes }) => {
-        buttonElement.classList.remove("card__like-button_is-active");
-
-        if (likes.length) {
-          counterElement.classList.add("card__like-counter_is-active");
-
-          counterElement.textContent = likes.length;
-        } else {
-          counterElement.classList.remove("card__like-counter_is-active");
-
-          counterElement.textContent = "";
-        }
+        removeLike({ buttonElement, counterElement, likes });
       })
-
       .catch((error) => console.error(error))
-
       .finally(() => {
         buttonElement.disabled = false;
       });
   } else {
     likeCard(cardId)
       .then(({ likes }) => {
-        buttonElement.classList.add("card__like-button_is-active");
-
-        counterElement.classList.add("card__like-counter_is-active");
-
-        counterElement.textContent = likes.length;
+        setLike({ buttonElement, counterElement, likes });
       })
-
       .catch((error) => console.error(error))
-
       .finally(() => {
         buttonElement.disabled = false;
       });
@@ -125,13 +109,11 @@ const cardRemovalHandler = ({ cardId, buttonElement }) => {
     deleteCard(cardId)
       .then(() => {
         removeCardFromDOM(buttonElement.closest(".card"));
+        closeModal(popupConfirm); // Закрываем попап после успешного удаления карточки
       })
       .catch((error) => {
         buttonElement.disabled = false;
         console.error(error);
-      })
-      .finally(() => {
-        closeModal(popupConfirm);
       });
   };
 };
@@ -141,7 +123,7 @@ const cardFormHandler = (event) => {
 
   changingButtonState({
     buttonElement: popupButton,
-    isSubmitting: true,
+    submitting: true,
   });
 
   addCard({
@@ -170,7 +152,7 @@ const cardFormHandler = (event) => {
     .finally(() => {
       changingButtonState({
         buttonElement: popupButton,
-        isSubmitting: false,
+        submitting: false,
       });
     });
 };
@@ -180,7 +162,7 @@ const handleProfileFormSubmit = (event) => {
 
   changingButtonState({
     buttonElement: profileFormSubmitButton,
-    isSubmitting: true,
+    submitting: true,
   });
 
   updateUserInfo({
@@ -202,7 +184,7 @@ const handleProfileFormSubmit = (event) => {
     .finally(() => {
       changingButtonState({
         buttonElement: profileFormSubmitButton,
-        isSubmitting: false,
+        submitting: false,
       });
     });
 };
@@ -212,7 +194,7 @@ const submittingFormProfilePicture = (event) => {
 
   changingButtonState({
     buttonElement: profileImageFormSubmitButton,
-    isSubmitting: true,
+    submitting: true,
   });
 
   updateAvatar(profileImageInput.value)
@@ -231,10 +213,11 @@ const submittingFormProfilePicture = (event) => {
     .finally(() => {
       changingButtonState({
         buttonElement: profileImageFormSubmitButton,
-        isSubmitting: false,
+        submitting: false,
       });
     });
 };
+
 
 const handlePopupProfileButtonOpenClick = () => {
   profileNameInput.value = profileTitle.textContent;
